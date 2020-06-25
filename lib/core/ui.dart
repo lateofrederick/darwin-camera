@@ -61,7 +61,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
         longCode: 'Rear Right',
         representation: 'assets/images/Right_Rear_Thick_6.png'),
     PictureObject(
-        shortCode: 'Rr',
+        shortCode: 'REAR',
         longCode: 'Rear',
         representation: 'assets/images/Rear_thick.png'),
     PictureObject(
@@ -77,7 +77,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
         longCode: 'Front Left',
         representation: 'assets/images/Front_Left_thick_2.png'),
     PictureObject(
-        shortCode: 'Fr',
+        shortCode: 'FRONT',
         longCode: 'Front',
         representation: 'assets/images/Front_thick_1.png'),
   ];
