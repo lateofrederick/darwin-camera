@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:camera/camera.dart';
 import 'package:darwin_camera/core/core.dart';
 import 'package:darwin_camera/core/helper.dart';
+import 'package:darwin_camera/core/picture_object.dart';
+import 'package:darwin_camera/globals.dart';
 import 'package:flutter/material.dart';
 
 double captureButtonInnerBorderRadius = grid_spacer * 10;
@@ -12,7 +15,7 @@ double captureButtonSize = grid_spacer * 10;
 
 enum CameraState { NOT_CAPTURING, CAPTURING, CAPTURED }
 
-class RenderCameraStream extends StatelessWidget {
+class RenderCameraStream extends StatefulWidget {
   final CameraController cameraController;
   final bool showHeader;
   final bool showFooter;
@@ -22,7 +25,7 @@ class RenderCameraStream extends StatelessWidget {
   final Widget rightFooterButton;
   final Function onBackPress;
 
-  const RenderCameraStream({
+  RenderCameraStream({
     Key key,
 
     ///
@@ -39,19 +42,154 @@ class RenderCameraStream extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _RenderCameraStreamState createState() => _RenderCameraStreamState();
+}
+
+class _RenderCameraStreamState extends State<RenderCameraStream> {
+  String imageString; // = 'assets/images/right_side_thick_7.png';
+  List<PictureObject> objects = [
+    PictureObject(
+        shortCode: 'FR',
+        longCode: 'Front Right',
+        representation: 'assets/images/FR.png'),
+    PictureObject(
+        shortCode: 'RS',
+        longCode: 'Right Side',
+        representation: 'assets/images/right_side_thick_7.png'),
+    PictureObject(
+        shortCode: 'RR',
+        longCode: 'Rear Right',
+        representation: 'assets/images/Right_Rear_Thick_6.png'),
+    PictureObject(
+        shortCode: 'Rr',
+        longCode: 'Rear',
+        representation: 'assets/images/Rear_thick.png'),
+    PictureObject(
+        shortCode: 'LR',
+        longCode: 'Left Rear',
+        representation: 'assets/images/Left_Rear_Thick_4.png'),
+    PictureObject(
+        shortCode: 'LS',
+        longCode: 'Left Side',
+        representation: 'assets/images/left_side_thick_3.png'),
+    PictureObject(
+        shortCode: 'FL',
+        longCode: 'Front Left',
+        representation: 'assets/images/Front_Left_thick_2.png'),
+    PictureObject(
+        shortCode: 'Fr',
+        longCode: 'Front',
+        representation: 'assets/images/Front_thick_1.png'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    imageString = objects[0].representation;
+    globalPictureObject = objects[0];
+  }
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: this.disableNativeBackFunctionality
+      onWillPop: this.widget.disableNativeBackFunctionality
           ? () async {
               return false;
             }
           : null,
-      child: Stack(
-        children: <Widget>[
-          getCameraStream(context),
-          getHeader(showHeader),
-          getFooter(showFooter),
-        ],
+      child: SafeArea(
+        top: true,
+        child: Stack(
+          children: <Widget>[
+            getCameraStream(context),
+            getHeader(widget.showHeader),
+            getFooter(widget.showFooter),
+            showCarOutline(context),
+            imageControls(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget imageControls(BuildContext context) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        height: 100,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: objects
+              .map(
+                (e) => Container(
+                  height: 80,
+                  margin: EdgeInsets.all(8.0),
+                  child: Material(
+                    child: GestureDetector(
+                      onTap: () {
+                        globalPictureObject = e;
+                        imageString = e.representation;
+                        setState(() {});
+                      },
+                      child: Transform.rotate(
+                        angle: math.pi / 2,
+                        child: Stack(
+                          children: <Widget>[
+                            Image.asset(
+                              'assets/images/camera.png',
+                              package: 'darwin_camera',
+                              fit: BoxFit.cover,
+                            ),
+                            Positioned.fill(
+                              top: 50,
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                                alignment: Alignment.bottomCenter,
+                                color: Colors.orange,
+                                child: Text(
+                                  e.longCode,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget showCarOutline(BuildContext context) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: Container(
+        child: Transform.scale(
+          scale: 1.2,
+          child: Transform.rotate(
+            angle: math.pi / 2,
+            child: Image.asset(
+              imageString,
+              package: 'darwin_camera',
+              fit: BoxFit.fitWidth,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -62,20 +200,21 @@ class RenderCameraStream extends StatelessWidget {
   /// isn't perfect.
   Widget getCameraStream(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    final double cameraAspectRatio = cameraController.value.aspectRatio;
+    final double cameraAspectRatio = widget.cameraController.value.aspectRatio;
 
     ///
     return ClipRect(
       child: Container(
         child: Center(
-            child: AspectRatio(
-              aspectRatio: cameraAspectRatio,
-              child: CameraPreview(cameraController),
-              // (cameraMode == CameraMode.BARCODE)
-              //     ? Container()
-              //     : previewCamera(cameraState),
-            ),
+          child: AspectRatio(
+            aspectRatio: cameraAspectRatio,
+            child: CameraPreview(widget.cameraController),
+            // (cameraMode == CameraMode.BARCODE)
+            //     ? Container()
+            //     : previewCamera(cameraState),
           ),
+        ),
+
         ///
         /// FIX: Provide multiple presets and aspects ratio to the users.
         // Transform.scale(
@@ -117,8 +256,8 @@ class RenderCameraStream extends StatelessWidget {
                   opacity: 1,
                   padding: padding_a_xs,
                   onTap: () {
-                    if (onBackPress != null) {
-                      onBackPress();
+                    if (widget.onBackPress != null) {
+                      widget.onBackPress();
                     }
                   },
                 ),
@@ -134,9 +273,9 @@ class RenderCameraStream extends StatelessWidget {
     return Visibility(
       visible: showFooter,
       child: CameraFooter(
-        leftButton: leftFooterButton,
-        centerButton: centerFooterButton,
-        rightButton: rightFooterButton,
+        leftButton: widget.leftFooterButton,
+        centerButton: widget.centerFooterButton,
+        rightButton: widget.rightFooterButton,
       ),
     );
   }

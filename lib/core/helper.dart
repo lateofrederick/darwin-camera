@@ -1,10 +1,14 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:darwin_camera/core/picture_object.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class DarwinCameraHelper {
+  static List<File> files = [];
+  static List<PictureObject> objects = [];
+
   ///
   static LinearGradient backgroundGradient(
     AlignmentGeometry begin,
@@ -74,21 +78,31 @@ class DarwinCameraHelper {
     print('[+] COMPRESSED FILE SIZE: ${result.length}');
   }
 
-  static returnResult(context, {File file}) {
-    var result = DarwinCameraResult(file: file);
+  static returnResult(context, {File file, PictureObject obj}) {
+    files.add(file);
+    objects.add(obj);
+    var result = DarwinCameraResult(file: files, obj: objects);
+
     Navigator.pop(context, result);
+  }
+
+  static addToList(context, {File file, PictureObject obj}) {
+    files.add(file);
+    objects.add(obj);
+    return;
   }
 }
 
 class DarwinCameraResult {
   ///
-  final File file;
+  final List<File> file;
+  final List<PictureObject> obj;
 
   /// Scanned text in returned in case of Barcode Scanner.
   final String scannedText;
 
   bool get isFileAvailable {
-    if (file == null) {
+    if (file == null || file.isEmpty) {
       return false;
     } else {
       return true;
@@ -98,5 +112,6 @@ class DarwinCameraResult {
   DarwinCameraResult({
     this.file,
     this.scannedText,
+    this.obj,
   });
 }

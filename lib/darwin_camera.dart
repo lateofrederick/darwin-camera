@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:darwin_camera/globals.dart';
 import 'package:flutter/material.dart';
 
 import './core/core.dart';
@@ -139,6 +141,7 @@ class _DarwinCameraState extends State<DarwinCamera>
         enableCompression: widget.enableCompression,
       );
       file = File(savedFilePath);
+      globalPictureObject.image = file;
       setCameraState(CameraState.CAPTURED);
     } catch (e) {
       print(e);
@@ -245,12 +248,18 @@ class _DarwinCameraState extends State<DarwinCamera>
       centerFooterButton: ConfirmButton(
         key: ValueKey("ConfirmImageButton"),
         onTap: () {
-          DarwinCameraHelper.returnResult(context, file: file);
+          DarwinCameraHelper.addToList(context,
+              file: file, obj: globalPictureObject);
+          setCameraState(CameraState.NOT_CAPTURING);
         },
       ),
       rightFooterButton: CancelButton(
-        onTap: null,
-        opacity: 0,
+        key: ValueKey("CapturedImageCloseButton"),
+        onTap: () {
+          DarwinCameraHelper.returnResult(context,
+              file: file, obj: globalPictureObject);
+        },
+        opacity: 1,
       ),
     );
   }

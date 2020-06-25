@@ -16,13 +16,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-
   @override
   void initState() {
     super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +42,7 @@ class DarwinCameraTutorial extends StatefulWidget {
 }
 
 class _DarwinCameraTutorialState extends State<DarwinCameraTutorial> {
-  File imageFile;
+  List<File> imageFile;
   bool isImageCaptured;
 
   @override
@@ -65,11 +62,11 @@ class _DarwinCameraTutorialState extends State<DarwinCameraTutorial> {
 
     ///
     /// Microphone permission is required for android devices.
-    /// if permission isn't given before opening camera. 
+    /// if permission isn't given before opening camera.
     /// The app will crash.
-    /// 
+    ///
     /// For iOS devices, it's not neccessary. You can skip microphone permission.
-    /// Required for android devices. 
+    /// Required for android devices.
     await checkForPermissionBasedOnPermissionGroup(
       permissionHandler,
       PermissionGroup.microphone,
@@ -93,6 +90,7 @@ class _DarwinCameraTutorialState extends State<DarwinCameraTutorial> {
           filePath: filePath,
           resolution: ResolutionPreset.high,
           defaultToFrontFacing: false,
+          enableCompression: true,
           quality: 90,
         ),
       ),
@@ -104,9 +102,10 @@ class _DarwinCameraTutorialState extends State<DarwinCameraTutorial> {
       setState(() {
         isImageCaptured = true;
         imageFile = result.file;
+        // imageFile = result.file;
       });
-      print(result.file);
-      print(result.file.path);
+      print(result.obj);
+      // print(result.file.path);
     }
 
     ///
@@ -134,25 +133,34 @@ class _DarwinCameraTutorialState extends State<DarwinCameraTutorial> {
               },
             ),
           ),
-          if (isImageCaptured)
-            Container(
-              margin: padding_a_xs,
-              padding: padding_a_xxs,
-              decoration: BoxDecoration(
-                color: DarwinPrimaryLight,
-                borderRadius: BorderRadius.circular(grid_spacer * 2),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(grid_spacer),
-                child: Image.file(
-                  imageFile,
-                  key: ValueKey("CapturedImagePreview"),
-                  fit: BoxFit.fitHeight,
-                  alignment: Alignment.center,
-                  height: 300,
-                ),
-              ),
-            )
+          isImageCaptured
+              ? Expanded(
+                  child: ListView.builder(
+                    itemCount: imageFile.length,
+                    itemBuilder: (context, index) {
+                      final file = imageFile[index];
+                      return Container(
+                        margin: padding_a_xs,
+                        padding: padding_a_xxs,
+                        decoration: BoxDecoration(
+                          color: DarwinPrimaryLight,
+                          borderRadius: BorderRadius.circular(grid_spacer * 2),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(grid_spacer),
+                          child: Image.file(
+                            file,
+                            // key: ValueKey("CapturedImagePreview"),
+                            fit: BoxFit.fitHeight,
+                            alignment: Alignment.center,
+                            height: 300,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                )
+              : Container()
         ],
       ),
     );
