@@ -395,6 +395,31 @@ class CancelButton extends StatelessWidget {
     );
   }
 }
+
+class AddButton extends StatelessWidget {
+  final Function onTap;
+
+  AddButton({Key key, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (onTap != null) {
+          onTap();
+        }
+      },
+      child: Container(
+        child: Icon(
+          Icons.add,
+          color: DarwinWhite,
+          size: grid_spacer * 4,
+        ),
+      ),
+    );
+  }
+}
+
 //=============================================================
 //
 //   ####    ###    #####   ######  ##   ##  #####    #####

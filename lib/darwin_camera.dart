@@ -248,18 +248,17 @@ class _DarwinCameraState extends State<DarwinCamera>
       centerFooterButton: ConfirmButton(
         key: ValueKey("ConfirmImageButton"),
         onTap: () {
+          DarwinCameraHelper.returnResult(context,
+              file: file, obj: globalPictureObject);
+        },
+      ),
+      rightFooterButton: AddButton(
+        key: ValueKey("CapturedImageCloseButton"),
+        onTap: () {
           DarwinCameraHelper.addToList(context,
               file: file, obj: globalPictureObject);
           setCameraState(CameraState.NOT_CAPTURING);
         },
-      ),
-      rightFooterButton: CancelButton(
-        key: ValueKey("CapturedImageCloseButton"),
-        onTap: () {
-          DarwinCameraHelper.returnResult(context,
-              file: file, obj: globalPictureObject);
-        },
-        opacity: 1,
       ),
     );
   }
