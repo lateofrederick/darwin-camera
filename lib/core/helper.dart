@@ -83,6 +83,8 @@ class DarwinCameraHelper {
     objects.add(obj);
     var result = DarwinCameraResult(file: files, obj: objects);
 
+    files = [];
+    objects = [];
     Navigator.pop(context, result);
   }
 
