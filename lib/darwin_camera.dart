@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:darwin_camera/core/photo_cropper.dart';
 import 'package:darwin_camera/core/photo_filter.dart';
 import 'package:darwin_camera/globals.dart';
 import 'package:flutter/material.dart';
@@ -252,6 +253,18 @@ class _DarwinCameraState extends State<DarwinCamera>
 
         if (res != null && res.containsKey('image_filtered')) {
           file = res['image_filtered'];
+        }
+      },
+      onCropPressed: () async {
+        final temp = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => PhotoCropperScreen(file),
+          ),
+        );
+
+        if (temp != null) {
+          file = temp;
         }
       },
       leftFooterButton: CancelButton(
