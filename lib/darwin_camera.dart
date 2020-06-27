@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:darwin_camera/core/photo_filter.dart';
 import 'package:darwin_camera/globals.dart';
 import 'package:flutter/material.dart';
 
@@ -227,6 +228,9 @@ class _DarwinCameraState extends State<DarwinCamera>
         onTap: toggleCamera,
         opacity: showCameraToggle ? 1.0 : 0.0,
       ),
+      nextFooterButton: NextButton(
+        onTap: null,
+      ),
     );
   }
 
@@ -238,6 +242,18 @@ class _DarwinCameraState extends State<DarwinCamera>
     return RenderCapturedImage(
       key: ValueKey("RenderCapturedImageWidget"),
       file: file,
+      onFilterPressed: () async {
+        final res = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => PhotoFilterScreen(file),
+          ),
+        );
+
+        if (res != null && res.containsKey('image_filtered')) {
+          file = res['image_filtered'];
+        }
+      },
       leftFooterButton: CancelButton(
         key: ValueKey("CapturedImageCancelButton"),
         opacity: 1,
@@ -259,6 +275,11 @@ class _DarwinCameraState extends State<DarwinCamera>
               file: file, obj: globalPictureObject);
           setCameraState(CameraState.NOT_CAPTURING);
         },
+      ),
+      nextButton: NextButton(
+        showNextButton: true,
+        key: ValueKey("NextSelectionButton"),
+        onTap: () {},
       ),
     );
   }

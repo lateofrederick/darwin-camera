@@ -24,6 +24,7 @@ class RenderCameraStream extends StatefulWidget {
   final Widget centerFooterButton;
   final Widget rightFooterButton;
   final Function onBackPress;
+  final Widget nextFooterButton;
 
   RenderCameraStream({
     Key key,
@@ -39,6 +40,7 @@ class RenderCameraStream extends StatefulWidget {
     @required this.leftFooterButton,
     @required this.centerFooterButton,
     @required this.rightFooterButton,
+    @required this.nextFooterButton,
   }) : super(key: key);
 
   @override
@@ -276,6 +278,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
         leftButton: widget.leftFooterButton,
         centerButton: widget.centerFooterButton,
         rightButton: widget.rightFooterButton,
+        nextButton: widget.nextFooterButton,
       ),
     );
   }
@@ -288,6 +291,9 @@ class RenderCapturedImage extends StatelessWidget {
   final Widget leftFooterButton;
   final Widget centerFooterButton;
   final Widget rightFooterButton;
+  final Widget nextButton;
+  final VoidCallback onCropPressed;
+  final VoidCallback onFilterPressed;
 
   ///
   const RenderCapturedImage({
@@ -296,30 +302,73 @@ class RenderCapturedImage extends StatelessWidget {
     @required this.leftFooterButton,
     @required this.centerFooterButton,
     @required this.rightFooterButton,
+    @required this.nextButton,
+    this.onFilterPressed,
+    this.onCropPressed,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Positioned.fill(
-          child: Container(
-            color: DarwinBlack,
-            height: double.infinity,
-            child: Image.file(
-              file,
-              fit: BoxFit.contain,
-              width: double.infinity,
-              alignment: Alignment.center,
+    return SafeArea(
+      child: Stack(
+        children: <Widget>[
+          Positioned.fill(
+            child: Container(
+              color: DarwinBlack,
+              height: double.infinity,
+              child: Image.file(
+                file,
+                fit: BoxFit.contain,
+                width: double.infinity,
+                alignment: Alignment.center,
+              ),
             ),
           ),
+          CameraFooter(
+            leftButton: leftFooterButton,
+            centerButton: centerFooterButton,
+            rightButton: rightFooterButton,
+            nextButton: nextButton,
+          ),
+          controlsHeader(),
+        ],
+      ),
+    );
+  }
+
+  Widget controlsHeader() {
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        margin: EdgeInsets.only(top: 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.all(4.0),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: Icon(Icons.crop, color: Colors.white),
+                onPressed: onCropPressed ?? null,
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.all(4.0),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: Icon(Icons.photo_filter, color: Colors.white),
+                onPressed: onFilterPressed ?? null,
+              ),
+            ),
+          ],
         ),
-        CameraFooter(
-          leftButton: leftFooterButton,
-          centerButton: centerFooterButton,
-          rightButton: rightFooterButton,
-        ),
-      ],
+      ),
     );
   }
 }
@@ -328,12 +377,14 @@ class CameraFooter extends StatelessWidget {
   final Widget leftButton;
   final Widget centerButton;
   final Widget rightButton;
+  final Widget nextButton;
 
   CameraFooter({
     Key key,
     @required this.leftButton,
     @required this.centerButton,
     @required this.rightButton,
+    this.nextButton,
   }) : super(key: key);
 
   @override
@@ -350,8 +401,13 @@ class CameraFooter extends StatelessWidget {
         padding: padding_x_s + padding_top_xl + padding_bottom_l,
         child: SafeArea(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[leftButton, centerButton, rightButton],
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              leftButton,
+              centerButton,
+              rightButton,
+              nextButton,
+            ],
           ),
         ),
       ),
@@ -414,6 +470,34 @@ class AddButton extends StatelessWidget {
           Icons.add,
           color: DarwinWhite,
           size: grid_spacer * 4,
+        ),
+      ),
+    );
+  }
+}
+
+class NextButton extends StatelessWidget {
+  final Function onTap;
+  final bool showNextButton;
+
+  NextButton({Key key, this.onTap, this.showNextButton = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: showNextButton,
+      child: GestureDetector(
+        onTap: () {
+          if (onTap != null) {
+            onTap();
+          }
+        },
+        child: Container(
+          child: Icon(
+            Icons.arrow_forward,
+            color: DarwinWhite,
+            size: grid_spacer * 4,
+          ),
         ),
       ),
     );
