@@ -143,7 +143,7 @@ class _DarwinCameraState extends State<DarwinCamera>
         enableCompression: widget.enableCompression,
       );
       file = File(savedFilePath);
-      globalPictureObject.image = file;
+
       setCameraState(CameraState.CAPTURED);
     } catch (e) {
       print(e);
@@ -277,6 +277,7 @@ class _DarwinCameraState extends State<DarwinCamera>
       centerFooterButton: ConfirmButton(
         key: ValueKey("ConfirmImageButton"),
         onTap: () {
+          globalPictureObject.image = file;
           DarwinCameraHelper.returnResult(context,
               file: file, obj: globalPictureObject);
         },
@@ -284,6 +285,7 @@ class _DarwinCameraState extends State<DarwinCamera>
       rightFooterButton: AddButton(
         key: ValueKey("CapturedImageCloseButton"),
         onTap: () {
+          globalPictureObject.image = file;
           DarwinCameraHelper.addToList(context,
               file: file, obj: globalPictureObject);
           setCameraState(CameraState.NOT_CAPTURING);
