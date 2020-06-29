@@ -301,6 +301,7 @@ class _DarwinCameraState extends State<DarwinCamera>
         showNextButton: true,
         key: ValueKey("NextSelectionButton"),
         onTap: () {
+          globalPictureObject.image = file;
           DarwinCameraHelper.addToList(context,
               file: file, obj: globalPictureObject);
           setCameraState(CameraState.NOT_CAPTURING);
