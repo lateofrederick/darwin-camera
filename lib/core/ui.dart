@@ -2,11 +2,13 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:camera/camera.dart';
+import 'package:darwin_camera/core/camera_view_model.dart';
 import 'package:darwin_camera/core/core.dart';
 import 'package:darwin_camera/core/helper.dart';
 import 'package:darwin_camera/core/picture_object.dart';
 import 'package:darwin_camera/globals.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 double captureButtonInnerBorderRadius = grid_spacer * 10;
 double captureButtonInnerShutterSize = grid_spacer * 8;
@@ -48,51 +50,18 @@ class RenderCameraStream extends StatefulWidget {
 }
 
 class _RenderCameraStreamState extends State<RenderCameraStream> {
-  String imageString; // = 'assets/images/right_side_thick_7.png';
-  List<PictureObject> objects = [
-    PictureObject(
-        shortCode: 'FR',
-        longCode: 'Front Right',
-        representation: 'assets/images/FR.png'),
-    PictureObject(
-        shortCode: 'RS',
-        longCode: 'Right Side',
-        representation: 'assets/images/right_side_thick_7.png'),
-    PictureObject(
-        shortCode: 'RR',
-        longCode: 'Rear Right',
-        representation: 'assets/images/Right_Rear_Thick_6.png'),
-    PictureObject(
-        shortCode: 'REAR',
-        longCode: 'Rear',
-        representation: 'assets/images/Rear_thick.png'),
-    PictureObject(
-        shortCode: 'LR',
-        longCode: 'Left Rear',
-        representation: 'assets/images/Left_Rear_Thick_4.png'),
-    PictureObject(
-        shortCode: 'LS',
-        longCode: 'Left Side',
-        representation: 'assets/images/left_side_thick_3.png'),
-    PictureObject(
-        shortCode: 'FL',
-        longCode: 'Front Left',
-        representation: 'assets/images/Front_Left_thick_2.png'),
-    PictureObject(
-        shortCode: 'FRONT',
-        longCode: 'Front',
-        representation: 'assets/images/Front_thick_1.png'),
-  ];
+  PictureObject currentObj;
 
   @override
   void initState() {
     super.initState();
-    imageString = objects[0].representation;
-    globalPictureObject = objects[0];
+    globalPictureObject = context.read<CameraViewModel>().objects[0];
   }
 
   @override
   Widget build(BuildContext context) {
+    currentObj = context.watch<CameraViewModel>().current;
+
     return WillPopScope(
       onWillPop: this.widget.disableNativeBackFunctionality
           ? () async {
@@ -121,54 +90,55 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
       right: 0,
       child: Container(
         height: 100,
-        child: ListView(
+        child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          children: objects
-              .map(
-                (e) => Container(
-                  height: 80,
-                  margin: EdgeInsets.all(8.0),
-                  child: Material(
-                    child: GestureDetector(
-                      onTap: () {
-                        globalPictureObject = e;
-                        imageString = e.representation;
-                        setState(() {});
-                      },
-                      child: Transform.rotate(
-                        angle: math.pi / 2,
-                        child: Stack(
-                          children: <Widget>[
-                            Image.asset(
-                              'assets/images/camera.png',
-                              package: 'darwin_camera',
-                              fit: BoxFit.cover,
-                            ),
-                            Positioned.fill(
-                              top: 50,
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                alignment: Alignment.bottomCenter,
-                                color: Colors.orange,
-                                child: Text(
-                                  e.longCode,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+          itemCount: Provider.of<CameraViewModel>(context).objects.length,
+          itemBuilder: (BuildContext context, int index) {
+            var e = Provider.of<CameraViewModel>(context).objects[index];
+            return Container(
+              height: 80,
+              margin: EdgeInsets.all(8.0),
+              child: Material(
+                child: GestureDetector(
+                  onTap: () {
+                    globalPictureObject = e;
+                    context
+                        .read<CameraViewModel>()
+                        .updatePictureObject(e, index);
+                  },
+                  child: Transform.rotate(
+                    angle: math.pi / 2,
+                    child: Stack(
+                      children: <Widget>[
+                        Image.asset(
+                          'assets/images/camera.png',
+                          package: 'darwin_camera',
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned.fill(
+                          top: 50,
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            alignment: Alignment.bottomCenter,
+                            color: Colors.orange,
+                            child: Text(
+                              e.longCode,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),
-              )
-              .toList(),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -186,7 +156,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
           child: Transform.rotate(
             angle: math.pi / 2,
             child: Image.asset(
-              imageString,
+              currentObj.representation,
               package: 'darwin_camera',
               fit: BoxFit.fitWidth,
             ),
@@ -488,9 +458,9 @@ class NextButton extends StatelessWidget {
       visible: showNextButton,
       child: GestureDetector(
         onTap: () {
-          if (onTap != null) {
-            onTap();
-          }
+          onTap();
+          Provider.of<CameraViewModel>(context, listen: false)
+              .getNextPictureObject();
         },
         child: Container(
           child: Icon(

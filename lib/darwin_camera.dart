@@ -1,11 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:darwin_camera/core/camera_view_model.dart';
 import 'package:darwin_camera/core/photo_cropper.dart';
 import 'package:darwin_camera/core/photo_filter.dart';
 import 'package:darwin_camera/globals.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import './core/core.dart';
 export './core/core.dart';
@@ -177,23 +178,28 @@ class _DarwinCameraState extends State<DarwinCamera>
     bool areMultipleCamerasAvailable = widget.cameraDescription.length > 1;
     // print("REBUILD CAMERA STREAM");
     if (isCameraInitialized) {
-      return Stack(
-        children: <Widget>[
-          getRenderCameraStreamWidget(
-            showCameraToggle: areMultipleCamerasAvailable,
-          ),
+      return ChangeNotifierProvider(
+        create: (_) => CameraViewModel(),
+        builder: (BuildContext context, Widget child) {
+          return Stack(
+            children: <Widget>[
+              getRenderCameraStreamWidget(
+                showCameraToggle: areMultipleCamerasAvailable,
+              ),
 
-          ///
-          /// !important We show captured image on the top of camera preview stream.
-          /// Else it will throw file path not found error.
-          Align(
-            alignment: Alignment.topCenter,
-            child: Visibility(
-              visible: cameraState == CameraState.CAPTURED,
-              child: getCapturedImageWidget(),
-            ),
-          )
-        ],
+              ///
+              /// !important We show captured image on the top of camera preview stream.
+              /// Else it will throw file path not found error.
+              Align(
+                alignment: Alignment.topCenter,
+                child: Visibility(
+                  visible: cameraState == CameraState.CAPTURED,
+                  child: getCapturedImageWidget(),
+                ),
+              )
+            ],
+          );
+        },
       );
     } else {
       return LoaderOverlay(
@@ -294,7 +300,11 @@ class _DarwinCameraState extends State<DarwinCamera>
       nextButton: NextButton(
         showNextButton: true,
         key: ValueKey("NextSelectionButton"),
-        onTap: () {},
+        onTap: () {
+          DarwinCameraHelper.addToList(context,
+              file: file, obj: globalPictureObject);
+          setCameraState(CameraState.NOT_CAPTURING);
+        },
       ),
     );
   }

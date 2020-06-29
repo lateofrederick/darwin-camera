@@ -14,6 +14,7 @@ dependencies:
   flutter_image_compress: ^0.6.8
   image_crop: ^0.3.2
   photofilters: ^1.0.5
+  provider: ^4.1.3
 
 dev_dependencies:
   flutter_driver:
