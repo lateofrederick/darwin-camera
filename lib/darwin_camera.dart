@@ -132,6 +132,7 @@ class _DarwinCameraState extends State<DarwinCamera>
 
   captureImage() async {
     // print("[+] CAPTURE IMAGE");
+    print('clicked');
 
     setCameraState(CameraState.CAPTURING);
 

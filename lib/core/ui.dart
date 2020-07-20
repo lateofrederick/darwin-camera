@@ -51,6 +51,7 @@ class RenderCameraStream extends StatefulWidget {
 
 class _RenderCameraStreamState extends State<RenderCameraStream> {
   PictureObject currentObj;
+  Orientation orientation;
 
   @override
   void initState() {
@@ -61,6 +62,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
   @override
   Widget build(BuildContext context) {
     currentObj = context.watch<CameraViewModel>().current;
+    orientation = MediaQuery.of(context).orientation;
 
     return WillPopScope(
       onWillPop: this.widget.disableNativeBackFunctionality
@@ -74,16 +76,16 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
           children: <Widget>[
             getCameraStream(context),
             getHeader(widget.showHeader),
+            showCarOutline(),
+            imageControls(),
             getFooter(widget.showFooter),
-            showCarOutline(context),
-            imageControls(context),
           ],
         ),
       ),
     );
   }
 
-  Widget imageControls(BuildContext context) {
+  Widget imageControls() {
     return Positioned(
       top: 0,
       left: 0,
@@ -144,24 +146,33 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
     );
   }
 
-  Widget showCarOutline(BuildContext context) {
+  Widget showCarOutline() {
     return Positioned(
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
       child: Container(
-        child: Transform.scale(
-          scale: 1.2,
-          child: Transform.rotate(
-            angle: math.pi / 2,
-            child: Image.asset(
-              currentObj.representation,
-              package: 'darwin_camera',
-              fit: BoxFit.fitWidth,
-            ),
-          ),
-        ),
+        child: orientation == Orientation.portrait
+            ? Transform.scale(
+                scale: 1.2,
+                child: Transform.rotate(
+                  angle: math.pi / 2,
+                  child: Image.asset(
+                    currentObj.representation,
+                    package: 'darwin_camera',
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
+              )
+            : Transform.scale(
+                scale: 0.8,
+                child: Image.asset(
+                  currentObj.representation,
+                  package: 'darwin_camera',
+                  fit: BoxFit.scaleDown,
+                ),
+              ),
       ),
     );
   }
@@ -178,13 +189,15 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
     return ClipRect(
       child: Container(
         child: Center(
-          child: AspectRatio(
-            aspectRatio: cameraAspectRatio,
-            child: CameraPreview(widget.cameraController),
-            // (cameraMode == CameraMode.BARCODE)
-            //     ? Container()
-            //     : previewCamera(cameraState),
-          ),
+          child: orientation == Orientation.portrait
+              ? AspectRatio(
+                  aspectRatio: cameraAspectRatio,
+                  child: CameraPreview(widget.cameraController),
+                  // (cameraMode == CameraMode.BARCODE)
+                  //     ? Container()
+                  //     : previewCamera(cameraState),
+                )
+              : CameraPreview(widget.cameraController),
         ),
 
         ///
@@ -254,7 +267,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
   }
 }
 
-class RenderCapturedImage extends StatelessWidget {
+class RenderCapturedImage extends StatefulWidget {
   final File file;
 
   ///
@@ -278,6 +291,11 @@ class RenderCapturedImage extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _RenderCapturedImageState createState() => _RenderCapturedImageState();
+}
+
+class _RenderCapturedImageState extends State<RenderCapturedImage> {
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Stack(
@@ -287,7 +305,7 @@ class RenderCapturedImage extends StatelessWidget {
               color: DarwinBlack,
               height: double.infinity,
               child: Image.file(
-                file,
+                widget.file,
                 fit: BoxFit.contain,
                 width: double.infinity,
                 alignment: Alignment.center,
@@ -295,10 +313,10 @@ class RenderCapturedImage extends StatelessWidget {
             ),
           ),
           CameraFooter(
-            leftButton: leftFooterButton,
-            centerButton: centerFooterButton,
-            rightButton: rightFooterButton,
-            nextButton: nextButton,
+            leftButton: widget.leftFooterButton,
+            centerButton: widget.centerFooterButton,
+            rightButton: widget.rightFooterButton,
+            nextButton: widget.nextButton,
           ),
           controlsHeader(),
         ],
@@ -322,7 +340,7 @@ class RenderCapturedImage extends StatelessWidget {
               ),
               child: IconButton(
                 icon: Icon(Icons.crop, color: Colors.white),
-                onPressed: onCropPressed ?? null,
+                onPressed: widget.onCropPressed ?? null,
               ),
             ),
             Container(
@@ -333,7 +351,7 @@ class RenderCapturedImage extends StatelessWidget {
               ),
               child: IconButton(
                 icon: Icon(Icons.photo_filter, color: Colors.white),
-                onPressed: onFilterPressed ?? null,
+                onPressed: widget.onFilterPressed ?? null,
               ),
             ),
           ],
@@ -343,7 +361,7 @@ class RenderCapturedImage extends StatelessWidget {
   }
 }
 
-class CameraFooter extends StatelessWidget {
+class CameraFooter extends StatefulWidget {
   final Widget leftButton;
   final Widget centerButton;
   final Widget rightButton;
@@ -357,6 +375,11 @@ class CameraFooter extends StatelessWidget {
     this.nextButton,
   }) : super(key: key);
 
+  @override
+  _CameraFooterState createState() => _CameraFooterState();
+}
+
+class _CameraFooterState extends State<CameraFooter> {
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -373,10 +396,10 @@ class CameraFooter extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              leftButton,
-              centerButton,
-              rightButton,
-              nextButton,
+              widget.leftButton,
+              widget.centerButton,
+              widget.rightButton,
+              widget.nextButton,
             ],
           ),
         ),
@@ -385,7 +408,7 @@ class CameraFooter extends StatelessWidget {
   }
 }
 
-class CancelButton extends StatelessWidget {
+class CancelButton extends StatefulWidget {
   ///
   final Function onTap;
   final double opacity;
@@ -400,17 +423,22 @@ class CancelButton extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _CancelButtonState createState() => _CancelButtonState();
+}
+
+class _CancelButtonState extends State<CancelButton> {
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (onTap != null) {
-          onTap();
+        if (widget.onTap != null) {
+          widget.onTap();
         }
       },
       child: Container(
-        padding: padding,
+        padding: widget.padding,
         child: Opacity(
-          opacity: opacity,
+          opacity: widget.opacity,
           child: Icon(
             Icons.cancel,
             color: DarwinWhite,
@@ -422,17 +450,22 @@ class CancelButton extends StatelessWidget {
   }
 }
 
-class AddButton extends StatelessWidget {
+class AddButton extends StatefulWidget {
   final Function onTap;
 
   AddButton({Key key, this.onTap});
 
   @override
+  _AddButtonState createState() => _AddButtonState();
+}
+
+class _AddButtonState extends State<AddButton> {
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (onTap != null) {
-          onTap();
+        if (widget.onTap != null) {
+          widget.onTap();
         }
       },
       child: Container(
@@ -446,19 +479,24 @@ class AddButton extends StatelessWidget {
   }
 }
 
-class NextButton extends StatelessWidget {
+class NextButton extends StatefulWidget {
   final Function onTap;
   final bool showNextButton;
 
   NextButton({Key key, this.onTap, this.showNextButton = false});
 
   @override
+  _NextButtonState createState() => _NextButtonState();
+}
+
+class _NextButtonState extends State<NextButton> {
+  @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible: showNextButton,
+      visible: widget.showNextButton,
       child: GestureDetector(
         onTap: () {
-          onTap();
+          widget.onTap();
           Provider.of<CameraViewModel>(context, listen: false)
               .getNextPictureObject();
         },
@@ -491,7 +529,7 @@ class NextButton extends StatelessWidget {
 //
 //=========================================================
 
-class CaptureButton extends StatelessWidget {
+class CaptureButton extends StatefulWidget {
   final double buttonSize;
   final double buttonPosition;
   final Function onTap;
@@ -504,10 +542,16 @@ class CaptureButton extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _CaptureButtonState createState() => _CaptureButtonState();
+}
+
+class _CaptureButtonState extends State<CaptureButton> {
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       child: getButtonBody(),
-      onTap: onTap,
+      onTap: widget.onTap,
     );
   }
 
@@ -521,8 +565,8 @@ class CaptureButton extends StatelessWidget {
           AnimatedContainer(
             alignment: Alignment.center,
             duration: Duration(milliseconds: 100),
-            width: buttonSize,
-            height: buttonSize,
+            width: widget.buttonSize,
+            height: widget.buttonSize,
             decoration: BoxDecoration(
               color: DarwinWhite.withOpacity(0.25),
               borderRadius: BorderRadius.circular(grid_spacer * 12),
@@ -530,8 +574,8 @@ class CaptureButton extends StatelessWidget {
           ),
           AnimatedPositioned(
             duration: Duration(milliseconds: 100),
-            top: buttonPosition,
-            left: buttonPosition,
+            top: widget.buttonPosition,
+            left: widget.buttonPosition,
             child: AnimatedContainer(
               duration: Duration(milliseconds: 100),
               width: grid_spacer * 8,
@@ -565,13 +609,18 @@ class CaptureButton extends StatelessWidget {
 //
 //=========================================================
 
-class ConfirmButton extends StatelessWidget {
+class ConfirmButton extends StatefulWidget {
   final Function onTap;
   const ConfirmButton({
     Key key,
     @required this.onTap,
   }) : super(key: key);
 
+  @override
+  _ConfirmButtonState createState() => _ConfirmButtonState();
+}
+
+class _ConfirmButtonState extends State<ConfirmButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -594,8 +643,8 @@ class ConfirmButton extends StatelessWidget {
         ),
       ),
       onTap: () {
-        if (onTap != null) {
-          onTap();
+        if (widget.onTap != null) {
+          widget.onTap();
         }
       },
     );
@@ -622,7 +671,7 @@ class ConfirmButton extends StatelessWidget {
 ///
 ///
 /// This widget will send event to toggle camera.
-class ToggleCameraButton extends StatelessWidget {
+class ToggleCameraButton extends StatefulWidget {
   final Function onTap;
   final double opacity;
   const ToggleCameraButton({
@@ -632,12 +681,17 @@ class ToggleCameraButton extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _ToggleCameraButtonState createState() => _ToggleCameraButtonState();
+}
+
+class _ToggleCameraButtonState extends State<ToggleCameraButton> {
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(
         padding: padding_a_s,
         child: Opacity(
-          opacity: opacity,
+          opacity: widget.opacity,
           child: Icon(
             Icons.refresh,
             color: DarwinWhite,
@@ -645,15 +699,20 @@ class ToggleCameraButton extends StatelessWidget {
           ),
         ),
       ),
-      onTap: onTap,
+      onTap: widget.onTap,
     );
   }
 }
 
-class LoaderOverlay extends StatelessWidget {
-  bool isVisible;
-
+class LoaderOverlay extends StatefulWidget {
   LoaderOverlay({Key key, bool visible, String helperText}) : super(key: key);
+
+  @override
+  _LoaderOverlayState createState() => _LoaderOverlayState();
+}
+
+class _LoaderOverlayState extends State<LoaderOverlay> {
+  bool isVisible;
 
   @override
   Widget build(BuildContext context) {
