@@ -49,10 +49,15 @@ class DarwinCamera extends StatefulWidget {
   /// Possible values `0 - 100`
   final int quality;
 
+  final bool showVehicleOutline;
+  final bool showNextButton;
+
   DarwinCamera({
     Key key,
     @required this.cameraDescription,
     @required this.filePath,
+    this.showVehicleOutline = true,
+    this.showNextButton = true,
     this.resolution = ResolutionPreset.high,
     this.enableCompression = false,
     this.disableNativeBackFunctionality = false,
@@ -214,6 +219,7 @@ class _DarwinCameraState extends State<DarwinCamera>
   }) {
     return RenderCameraStream(
       key: ValueKey("CameraStream"),
+      showVehicleOutline: widget.showVehicleOutline,
       cameraController: cameraController,
       showHeader: true,
       disableNativeBackFunctionality: widget.disableNativeBackFunctionality,
@@ -298,15 +304,18 @@ class _DarwinCameraState extends State<DarwinCamera>
           setCameraState(CameraState.NOT_CAPTURING);
         },
       ),
-      nextButton: NextButton(
-        showNextButton: true,
-        key: ValueKey("NextSelectionButton"),
-        onTap: () {
-          globalPictureObject.image = file;
-          DarwinCameraHelper.addToList(context,
-              file: file, obj: globalPictureObject);
-          setCameraState(CameraState.NOT_CAPTURING);
-        },
+      nextButton: Visibility(
+        visible: widget.showNextButton,
+        child: NextButton(
+          showNextButton: true,
+          key: ValueKey("NextSelectionButton"),
+          onTap: () {
+            globalPictureObject.image = file;
+            DarwinCameraHelper.addToList(context,
+                file: file, obj: globalPictureObject);
+            setCameraState(CameraState.NOT_CAPTURING);
+          },
+        ),
       ),
     );
   }

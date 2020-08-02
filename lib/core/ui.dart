@@ -27,6 +27,7 @@ class RenderCameraStream extends StatefulWidget {
   final Widget rightFooterButton;
   final Function onBackPress;
   final Widget nextFooterButton;
+  final bool showVehicleOutline;
 
   RenderCameraStream({
     Key key,
@@ -43,6 +44,7 @@ class RenderCameraStream extends StatefulWidget {
     @required this.centerFooterButton,
     @required this.rightFooterButton,
     @required this.nextFooterButton,
+    this.showVehicleOutline,
   }) : super(key: key);
 
   @override
@@ -76,8 +78,8 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
           children: <Widget>[
             getCameraStream(context),
             getHeader(widget.showHeader),
-            showCarOutline(),
-            imageControls(),
+            widget.showVehicleOutline ? showCarOutline() : Container(),
+            widget.showVehicleOutline ? imageControls() : Container(),
             getFooter(widget.showFooter),
           ],
         ),
@@ -182,7 +184,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
   /// Scaling is important here as the default camera stream
   /// isn't perfect.
   Widget getCameraStream(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    // Size size = MediaQuery.of(context).size;
     final double cameraAspectRatio = widget.cameraController.value.aspectRatio;
 
     ///

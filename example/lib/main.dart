@@ -90,6 +90,8 @@ class _DarwinCameraTutorialState extends State<DarwinCameraTutorial> {
           filePath: filePath,
           resolution: ResolutionPreset.high,
           defaultToFrontFacing: false,
+          showVehicleOutline: false,
+          showNextButton: false,
           // enableCompression: true,
           quality: 90,
         ),
@@ -250,7 +252,7 @@ class ButtonWithImage extends StatelessWidget {
                 ),
                 Text(
                   title.toUpperCase(),
-                  style: Theme.of(context).textTheme.display1.copyWith(
+                  style: Theme.of(context).textTheme.headline4.copyWith(
                         color: DarwinPrimary,
                         height: 1.2,
                         fontSize: 20,
