@@ -77,7 +77,7 @@ class _DarwinCameraTutorialState extends State<DarwinCameraTutorial> {
     String uuid = DateTime.now().millisecondsSinceEpoch.toString();
 
     ///
-    filePath = '$filePath/$uuid.png';
+    filePath = '$filePath'; // $uuid.png';
 
     List<CameraDescription> cameraDescription = await availableCameras();
 
