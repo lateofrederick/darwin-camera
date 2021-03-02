@@ -79,4 +79,9 @@ class CameraViewModel with ChangeNotifier {
       );
     }
   }
+
+  void toggleDamaged() {
+    _currentObject.isDamaged = !_currentObject.isDamaged;
+    notifyListeners();
+  }
 }

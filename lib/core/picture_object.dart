@@ -5,13 +5,14 @@ class PictureObject {
   String longCode;
   String representation;
   File image;
+  bool isDamaged;
 
-  PictureObject({
-    this.shortCode,
-    this.longCode,
-    this.representation,
-    this.image,
-  });
+  PictureObject(
+      {this.shortCode,
+      this.longCode,
+      this.representation,
+      this.image,
+      this.isDamaged = false});
 
   @override
   String toString() => '''
@@ -19,7 +20,8 @@ class PictureObject {
       shortCode: $shortCode,
       longCode: $longCode,
       rep: $representation,
-      image: ${image.path}
+      image: ${image.path},
+      isDamaged: $isDamaged
     }
   ''';
 }

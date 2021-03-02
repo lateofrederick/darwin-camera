@@ -291,6 +291,7 @@ class RenderCapturedImage extends StatefulWidget {
   final Widget nextButton;
   final VoidCallback onCropPressed;
   final VoidCallback onFilterPressed;
+  final VoidCallback onDamagedPressed;
 
   ///
   const RenderCapturedImage({
@@ -302,6 +303,7 @@ class RenderCapturedImage extends StatefulWidget {
     @required this.nextButton,
     this.onFilterPressed,
     this.onCropPressed,
+    this.onDamagedPressed,
   }) : super(key: key);
 
   @override
@@ -342,12 +344,12 @@ class _RenderCapturedImageState extends State<RenderCapturedImage> {
     return Material(
       color: Colors.transparent,
       child: Container(
-        margin: EdgeInsets.only(top: 16.0),
+        margin: EdgeInsets.only(top: 32.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-              margin: EdgeInsets.all(4.0),
+              margin: EdgeInsets.all(6.0),
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.5),
                 shape: BoxShape.circle,
@@ -358,7 +360,7 @@ class _RenderCapturedImageState extends State<RenderCapturedImage> {
               ),
             ),
             Container(
-              margin: EdgeInsets.all(4.0),
+              margin: EdgeInsets.all(6.0),
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.5),
                 shape: BoxShape.circle,
@@ -366,6 +368,23 @@ class _RenderCapturedImageState extends State<RenderCapturedImage> {
               child: IconButton(
                 icon: Icon(Icons.photo_filter, color: Colors.white),
                 onPressed: widget.onFilterPressed ?? null,
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.all(6.0),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: Icon(Icons.warning,
+                    color:
+                        Provider.of<CameraViewModel>(context).current.isDamaged
+                            ? Colors.yellow
+                            : Colors.white),
+                onPressed: () {
+                  Provider.of<CameraViewModel>(context).toggleDamaged();
+                },
               ),
             ),
           ],
