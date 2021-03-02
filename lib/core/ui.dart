@@ -95,6 +95,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
       child: Container(
         height: 100,
         child: ListView.builder(
+          controller: Provider.of<CameraViewModel>(context).listController,
           scrollDirection: Axis.horizontal,
           itemCount: Provider.of<CameraViewModel>(context).objects.length,
           itemBuilder: (BuildContext context, int index) {
@@ -136,6 +137,17 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
                             ),
                           ),
                         ),
+                        Visibility(
+                          visible: index ==
+                              Provider.of<CameraViewModel>(context).index,
+                          child: Align(
+                            alignment: Alignment.topRight,
+                            child: Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),

@@ -1,6 +1,7 @@
 import 'package:darwin_camera/core/picture_object.dart';
 import 'package:darwin_camera/globals.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class CameraViewModel with ChangeNotifier {
   List<PictureObject> objects = [
@@ -45,14 +46,23 @@ class CameraViewModel with ChangeNotifier {
     _currentObject = objects[index];
   }
 
+  ScrollController listController = ScrollController();
+
   PictureObject _currentObject;
   PictureObject get current => _currentObject;
 
   void updatePictureObject(PictureObject obj, int index) {
     _currentObject = obj;
     _currentIndex = index;
+    final jumpIndex = double.tryParse(index.toString()) * 80.0;
+
     print('updated');
     notifyListeners();
+    listController.animateTo(
+      jumpIndex,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeIn,
+    );
   }
 
   void getNextPictureObject() {
@@ -60,6 +70,13 @@ class CameraViewModel with ChangeNotifier {
       _currentIndex++;
       _currentObject = objects[_currentIndex];
       globalPictureObject = objects[_currentIndex];
+      final jumpIndex = double.tryParse(_currentIndex.toString()) * 80.0;
+
+      listController.animateTo(
+        jumpIndex,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeIn,
+      );
     }
   }
 }
