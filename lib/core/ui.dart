@@ -499,6 +499,7 @@ class _AddButtonState extends State<AddButton> {
       onTap: () {
         if (widget.onTap != null) {
           widget.onTap();
+          Provider.of<CameraViewModel>(context).resetDamaged();
         }
       },
       child: Container(

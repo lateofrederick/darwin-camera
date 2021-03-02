@@ -70,6 +70,9 @@ class CameraViewModel with ChangeNotifier {
       _currentIndex++;
       _currentObject = objects[_currentIndex];
       globalPictureObject = objects[_currentIndex];
+
+      notifyListeners();
+
       final jumpIndex = double.tryParse(_currentIndex.toString()) * 80.0;
 
       listController.animateTo(
@@ -82,6 +85,11 @@ class CameraViewModel with ChangeNotifier {
 
   void toggleDamaged() {
     _currentObject.isDamaged = !_currentObject.isDamaged;
+    notifyListeners();
+  }
+
+  void resetDamaged() {
+    _currentObject.isDamaged = false;
     notifyListeners();
   }
 }
