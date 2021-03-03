@@ -6,6 +6,7 @@ import 'package:darwin_camera/core/photo_cropper.dart';
 import 'package:darwin_camera/core/photo_filter.dart';
 import 'package:darwin_camera/globals.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import './core/core.dart';
@@ -89,12 +90,22 @@ class _DarwinCameraState extends State<DarwinCamera>
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.portraitUp,
+    ]);
     initVariables();
     initCamera();
   }
 
   @override
   void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.portraitUp,
+    ]);
     super.dispose();
     cameraController.dispose();
   }
