@@ -42,7 +42,7 @@ class _PhotoCropperScreenState extends State<PhotoCropperScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                RaisedButton(
+                ElevatedButton(
                   child: Text(
                     'Crop Image',
                   ),

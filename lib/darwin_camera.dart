@@ -154,12 +154,12 @@ class _DarwinCameraState extends State<DarwinCamera>
 
     ///
     try {
-      final uuid = DateTime.now().millisecondsSinceEpoch;
+      // final uuid = DateTime.now().millisecondsSinceEpoch;
       String savedFilePath;
-      String path = '${widget.filePath}/$uuid.png';
+      // String path = '${widget.filePath}/$uuid.png';
       savedFilePath = await DarwinCameraHelper.captureImage(
         cameraController,
-        path,
+        // path,
         enableCompression: widget.enableCompression,
       );
       file = File(savedFilePath);

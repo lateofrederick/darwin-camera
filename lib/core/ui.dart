@@ -204,13 +204,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
       child: Container(
         child: Center(
           child: orientation == Orientation.portrait
-              ? AspectRatio(
-                  aspectRatio: cameraAspectRatio,
-                  child: CameraPreview(widget.cameraController),
-                  // (cameraMode == CameraMode.BARCODE)
-                  //     ? Container()
-                  //     : previewCamera(cameraState),
-                )
+              ? CameraPreview(widget.cameraController)
               : CameraPreview(widget.cameraController),
         ),
 

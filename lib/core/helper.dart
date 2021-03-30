@@ -28,8 +28,8 @@ class DarwinCameraHelper {
   ///
   /// Captures image from the selected Camera.
   static Future<String> captureImage(
-    CameraController cameraController,
-    String filePath, {
+    CameraController cameraController, {
+    String filePath,
     bool enableCompression = true,
     int quality,
   }) async {
@@ -41,16 +41,18 @@ class DarwinCameraHelper {
     if (cameraController.value.isTakingPicture) {
       return null;
     }
-    File file = File(filePath);
+    // File file = File(filePath);
+    String filePath = '';
 
     try {
-      if (file.existsSync()) {
-        await file.delete();
-      }
+      // if (file.existsSync()) {
+      //   await file.delete();
+      // }
 
-      await cameraController.takePicture(filePath);
+      final image = await cameraController.takePicture();
+      filePath = image.path;
 
-      file = File(filePath);
+      File file = File(filePath);
       if (enableCompression == true) {
         await compressImage(file, quality);
       }
