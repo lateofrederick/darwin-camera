@@ -11,8 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   camera: #^0.8.1
-  flutter_image_compress: ^1.0.0
-  image_crop: ^0.3.4
+  flutter_image_compress: 
+  image_crop: 
   photofilters:
   provider: #^4.1.3
 
