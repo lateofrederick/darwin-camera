@@ -93,6 +93,8 @@ class _DarwinCameraState extends State<DarwinCamera>
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitDown,
       DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
     ]);
     initVariables();
     initCamera();
