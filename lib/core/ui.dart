@@ -167,7 +167,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
       right: 0,
       bottom: 0,
       child: Container(
-          child: orientation == Orientation.landscape
+          child: orientation == Orientation.portrait
               ? Transform.scale(
                   scale: 0.8,
                   child: Image.asset(
