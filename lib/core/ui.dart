@@ -167,27 +167,26 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
       right: 0,
       bottom: 0,
       child: Container(
-        child: orientation == Orientation.portrait
-            ? Transform.scale(
-                scale: 1.2,
-                child: Transform.rotate(
-                  angle: math.pi / 2,
+          child: orientation == Orientation.landscape
+              ? Transform.scale(
+                  scale: 0.8,
                   child: Image.asset(
                     currentObj.representation,
                     package: 'darwin_camera',
-                    fit: BoxFit.fitWidth,
+                    fit: BoxFit.scaleDown,
                   ),
-                ),
-              )
-            : Transform.scale(
-                scale: 0.8,
-                child: Image.asset(
-                  currentObj.representation,
-                  package: 'darwin_camera',
-                  fit: BoxFit.scaleDown,
-                ),
-              ),
-      ),
+                )
+              : Transform.scale(
+                  scale: 1.2,
+                  child: Transform.rotate(
+                    angle: math.pi / 2,
+                    child: Image.asset(
+                      currentObj.representation,
+                      package: 'darwin_camera',
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                )),
     );
   }
 
@@ -203,7 +202,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
     return ClipRect(
       child: Container(
         child: Center(
-          child: orientation == Orientation.portrait
+          child: orientation == Orientation.landscape
               ? CameraPreview(widget.cameraController)
               : CameraPreview(widget.cameraController),
         ),
