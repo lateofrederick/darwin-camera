@@ -96,6 +96,9 @@ class _DarwinCameraState extends State<DarwinCamera>
     ]);
     initVariables();
     initCamera();
+    print('====================================');
+    print('|                                   |');
+    print('=====================================');
   }
 
   @override
