@@ -202,7 +202,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
     return ClipRect(
       child: Container(
         child: Center(
-          child: orientation == Orientation.landscape
+          child: orientation == Orientation.portrait
               ? CameraPreview(widget.cameraController)
               : CameraPreview(widget.cameraController),
         ),
