@@ -170,13 +170,10 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
           child: orientation == Orientation.portrait
               ?  Transform.scale(
                   scale: 1.2,
-                  child: Transform.rotate(
-                    angle: math.pi / 2,
-                    child: Image.asset(
-                      currentObj.representation,
-                      package: 'darwin_camera',
-                      fit: BoxFit.scaleDown,
-                    ),
+                  child: Image.asset(
+                    currentObj.representation,
+                    package: 'darwin_camera',
+                    fit: BoxFit.scaleDown,
                   ),
                 ) : Transform.scale(
                   scale: 0.8,
