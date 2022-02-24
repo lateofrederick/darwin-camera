@@ -175,7 +175,7 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
                     child: Image.asset(
                       currentObj.representation,
                       package: 'darwin_camera',
-                      fit: BoxFit.fitWidth,
+                      fit: BoxFit.scaleDown,
                     ),
                   ),
                 ) : Transform.scale(
