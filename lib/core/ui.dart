@@ -65,6 +65,16 @@ class _RenderCameraStreamState extends State<RenderCameraStream> {
   Widget build(BuildContext context) {
     currentObj = context.watch<CameraViewModel>().current;
     orientation = MediaQuery.of(context).orientation;
+    var s = '============================================================='
+
+  '####    ###    #####   ######  ##   ##  #####    #####' +
+ '##      ## ##   ##  ##    ##    ##   ##  ##  ##   ##' +
+ '##     ##   ##  #####     ##    ##   ##  #####    #####' +
+ '##     #######  ##        ##    ##   ##  ##  ##   ##' +
+  '####  ##   ##  ##        ##     #####   ##   ##  #####';
+  print(s);
+  print(orientation);
+  print(s);
 
     return WillPopScope(
       onWillPop: this.widget.disableNativeBackFunctionality
